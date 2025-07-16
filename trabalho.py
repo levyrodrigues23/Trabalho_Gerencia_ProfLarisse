@@ -241,7 +241,7 @@ def exibir_lista_de_produtos():
     # Cabeçalho da listagem
     print("\nLISTA DE PRODUTOS (ordem de cadastro):")
     print("-" * 80)
-    print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15}")
+    print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15}") # eu usei este estilo de formatação que achei comumente interessante. Eu posso muito bem setar a quantidade de caracteres que eu quero de espaço entre as colunas, tornando a exibição bem mais organizada.
     print("-" * 80)
     
     # Percorre todos os produtos e exibe suas informações
@@ -253,7 +253,7 @@ def exibir_lista_de_produtos():
         print(f"{produto['id']:<8} {produto['nome']:<20} R${produto['preco']:<9.2f} "
               f"{produto['quantidade']:<5} {produto['categoria']:<15} {status}")
     
-    # Rodapé com total de produtos
+    # logo abaixo é tipo um rodapé com o total de produtos cadastrados
     print("-" * 80)
     print(f"Total de produtos: {len(lista_produtos)}")
 
