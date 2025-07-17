@@ -208,24 +208,102 @@ def cadastrar_novo_produto():
     print(f"\nProduto '{nome_produto}' cadastrado com sucesso!")
     print(f"ID: {id_produto} | Preço: R$ {preco_produto:.2f} | Quantidade: {quantidade_produto}")
     return produto
-        
-
-
-
 
 def atualizar_informacoes_produto():
     """
     Função para atualizar informações de um produto existente
     Permite editar preço, quantidade e categoria
     """
-    pass
+    print("\n===ATUALIZAÇÃO DE PRODUTO===\n")
+    id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()
+    
+    while not verificar_id_ja_existe(id_para_atualizar):
+        print("Esse produto não existe")
+        id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()    
+
+    print("O que você deseja atualizar? ")
+    print("1. Preço")
+    print("2. Nome")
+    print("3. Quantidade de estoque")
+
+    opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
+    while 0 > opcao_para_editar or opcao_para_editar > 3:
+        print("Digite um número de 1 a 4")
+        opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
+
+    def atualizar_informacao(novo_valor, chave):
+      """
+       Função genérica para atualizar uma informação específica de um produto.
+       Mostra um loop que percorre a lista global: lista_produtos e modifica algum valor a partir de um id, que são os paramêtros
+      """
+      for i in lista_produtos:
+        if i["id"] == id_para_atualizar:
+          i[chave] = novo_valor
+
+    if opcao_para_editar == 1:
+      novo_preco = float(input("Digite um novo preço: "))
+      while novo_preco <=0:
+          print("O novo preço deve ser superior a 0")
+          novo_preco = float(input("Digite um novo preço: "))
+      atualizar_informacao(novo_preco, "preco")    
+      print("Preço atualizado com sucesso!")              
+    elif opcao_para_editar == 2:
+      novo_nome = input("Digite um novo nome: ")
+      while not validar_nome_produto(novo_nome):
+          print("Erro! Esse nome não é válido!")
+          novo_nome = input("Digite um novo nome: ")
+      atualizar_informacao(novo_nome, "nome")
+      print("Nome atualizado com sucesso!")
+    elif opcao_para_editar == 3:
+      operacao = input("Digite + pra aumentar o estoque e - para subtrair: ")
+      while operacao != "+" and operacao != "-":
+          operacao = input("Você digitou algo errado! Digite - ou +: ")
+      for i in lista_produtos:
+          if i["id"] == id_para_atualizar:
+            if operacao == "+":
+                quantidade = int(input("Digite o valor que você quer aumentar: + "))
+                nova_quantidade = i["quantidade"] + quantidade
+            
+            elif operacao == "-":
+                quantidade = int(input("Digite o valor que você quer diminuir: - "))  
+                while quantidade > i["quantidade"]:
+                  print(f"Erro: Não há estoque suficiente para remover essa quantidade.")
+                  quantidade = int(input(f"Digite um valor de no máximo {i["quantidade"]}: - "))  
+                nova_quantidade = i["quantidade"] - quantidade
+   
+      atualizar_informacao(nova_quantidade, "quantidade")
+      print("Estoque atualizado com sucesso!")
+      if nova_quantidade == 0:
+          print("Estoque esgotado!") 
+    
+    else:
+        print("Inválido! Digite um número de 1 a 3")
 
 def excluir_produto_do_sistema():
     """
     Função para remover um produto do sistema
     Solicita confirmação antes de excluir
     """
-    pass
+    print("\n===EXCLUIR PRODUTO===\n")
+    id_para_excluir = input("Digite o id do produto que você deseja excluir: ").upper()
+    
+    while not verificar_id_ja_existe(id_para_excluir):
+        print("Esse produto não existe")
+        id_para_excluir = input("Digite o id do produto que você deseja atualizar: ").upper()
+    for i in lista_produtos:
+      if i['id'] == id_para_excluir:
+        if i["quantidade"] == 0:
+            print("Não é possível excluir produto sem estoque!")
+            break
+        confirmacao = input(f"Confirmação obrigatória: Você realmente deseja remover {i['nome']}? (S/N) ").upper()
+        while confirmacao != "S" and confirmacao != "N":
+            confirmacao = input("Digite S para continuar a exclusão e N para cancelar: ").upper()
+        if confirmacao == "S":
+            lista_produtos.remove(i)
+            print(f"Exclusão de {i['nome']} feita com sucesso!")
+            break
+        else:
+            print("Exclusão cancelada")
     
 def exibir_lista_de_produtos():
     """
