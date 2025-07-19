@@ -61,15 +61,15 @@ def exibir_menu():
     print("9. Aplicar Desconto")
     print("10. Sair")
     
-# Lista global para armazenar todos os produtos cadastrados no sistema
+# esta lista abaixo será responsável por armazenar todos os produtos cadastrados no sistema, será util no final para pode retornar todos os dados.
 lista_produtos = []
 
 def validar_formato_id_produto(id_produto):
     """
     Valida se o ID do produto está no formato correto ABC-123
-    (3 letras maiúsculas, hífen, 3 números)
-    Parâmetro: id_produto (string) - ID a ser validado
-    Retorna: True se válido, False caso contrário
+    separando no caso, temos 3 letras maiúsculas, um hífen e 3 números
+    o parametro é id_produto (string) - no caso o id do produto a ser validado
+    a função retorna True se o formato estiver correto, False caso contrário
     """
     # Verifica se tem exatamente 7 caracteres
     if len(id_produto) != 7:
@@ -289,7 +289,7 @@ def excluir_produto_do_sistema():
     
     while not verificar_id_ja_existe(id_para_excluir):
         print("Esse produto não existe")
-        id_para_excluir = input("Digite o id do produto que você deseja atualizar: ").upper()
+        id_para_excluir = input("Digite o id do produto que você deseja excluir: ").upper()
     for i in lista_produtos:
       if i['id'] == id_para_excluir:
         if i["quantidade"] == 0:
@@ -410,7 +410,7 @@ def ordenar_produtos_por_criterio():
     except:
         print("Entrada inválida. Ordem não foi salva.")
 
-def buscar_produto_no_sistema():
+def     buscar_produto_no_sistema():
     """
     Função para buscar produtos no sistema por diferentes critérios
     Permite busca por nome (parcial), ID (exato) ou categoria
