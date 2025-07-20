@@ -66,12 +66,6 @@ def exibir_menu():
 lista_produtos = []
 categorias_validas = ["Alimentos", "Limpeza", "Eletrônicos", "Vestuário"]
 historico_de_vendas = []
-lista_produtos = [
-    {'id': 'ABC-001', 'nome': 'Teclado Mecânico', 'preco': 250.00, 'quantidade': 10, 'categoria': 'Alimentos'}, 
-    {'id': 'DEF-002', 'nome': 'Mouse Gamer', 'preco': 150.00, 'quantidade': 15, 'categoria': 'Alimentos'}, 
-    {'id': 'GHI-003', 'nome': 'Monitor 24"', 'preco': 800.00, 'quantidade': 5, 'categoria': 'Limpeza'}, 
-    {'id': 'JKL-004', 'nome': 'Cadeira Gamer', 'preco': 1200.00, 'quantidade': 3, 'categoria': 'Limpeza'}, 
-    {'id': 'ABC-123', 'nome': 'Headset USB', 'preco': 180.00, 'quantidade': 8, 'categoria': 'Alimentos'}]
 
 def validar_formato_id_produto(id_produto):
     """
