@@ -59,17 +59,26 @@ def exibir_menu():
     print("7. Relatórios:(Valor Total/ Estoque Baixo)")
     print("8. Vender produto")
     print("9. Aplicar Desconto")
-    print("10. Sair")
+    print("10. Visualizar Histórico de vendas")
+    print("11. Sair")
     
-# Lista global para armazenar todos os produtos cadastrados no sistema
+# esta lista abaixo será responsável por armazenar todos os produtos cadastrados no sistema, será util no final para pode retornar todos os dados.
 lista_produtos = []
+categorias_validas = ["Alimentos", "Limpeza", "Eletrônicos", "Vestuário"]
+historico_de_vendas = []
+lista_produtos = [
+    {'id': 'ABC-001', 'nome': 'Teclado Mecânico', 'preco': 250.00, 'quantidade': 10, 'categoria': 'Alimentos'}, 
+    {'id': 'DEF-002', 'nome': 'Mouse Gamer', 'preco': 150.00, 'quantidade': 15, 'categoria': 'Alimentos'}, 
+    {'id': 'GHI-003', 'nome': 'Monitor 24"', 'preco': 800.00, 'quantidade': 5, 'categoria': 'Limpeza'}, 
+    {'id': 'JKL-004', 'nome': 'Cadeira Gamer', 'preco': 1200.00, 'quantidade': 3, 'categoria': 'Limpeza'}, 
+    {'id': 'ABC-123', 'nome': 'Headset USB', 'preco': 180.00, 'quantidade': 8, 'categoria': 'Alimentos'}]
 
 def validar_formato_id_produto(id_produto):
     """
     Valida se o ID do produto está no formato correto ABC-123
-    (3 letras maiúsculas, hífen, 3 números)
-    Parâmetro: id_produto (string) - ID a ser validado
-    Retorna: True se válido, False caso contrário
+    separando no caso, temos 3 letras maiúsculas, um hífen e 3 números
+    o parametro é id_produto (string) - no caso o id do produto a ser validado
+    a função retorna True se o formato estiver correto, False caso contrário
     """
     # Verifica se tem exatamente 7 caracteres
     if len(id_produto) != 7:
@@ -182,7 +191,6 @@ def cadastrar_novo_produto():
             print("Erro: Digite uma quantidade válida.")
     
     # Validação da categoria do produto
-    categorias_validas = ["Alimentos", "Limpeza", "Eletrônicos", "Vestuário"]
     while True:
         print(f"Categorias disponíveis: {', '.join(categorias_validas)}")
         categoria_produto = input("Digite a categoria do produto: ").strip()
@@ -221,15 +229,16 @@ def atualizar_informacoes_produto():
         print("Esse produto não existe")
         id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()    
 
+    # Menu para dizer o que você vai atualizar
     print("O que você deseja atualizar? ")
     print("1. Preço")
     print("2. Nome")
     print("3. Quantidade de estoque")
 
     opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
+    # Pede para digitar de novo caso aja erro
     while 0 > opcao_para_editar or opcao_para_editar > 3:
-        print("Digite um número de 1 a 4")
-        opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
+        opcao_para_editar = int(input("\nErro: Selecione uma opção de 1 a 3: "))
 
     def atualizar_informacao(novo_valor, chave):
       """
@@ -240,6 +249,7 @@ def atualizar_informacoes_produto():
         if i["id"] == id_para_atualizar:
           i[chave] = novo_valor
 
+    # Atualização de cada uma das opções
     if opcao_para_editar == 1:
       novo_preco = float(input("Digite um novo preço: "))
       while novo_preco <=0:
@@ -273,6 +283,7 @@ def atualizar_informacoes_produto():
    
       atualizar_informacao(nova_quantidade, "quantidade")
       print("Estoque atualizado com sucesso!")
+      # Caso o estoque zere
       if nova_quantidade == 0:
           print("Estoque esgotado!") 
     
@@ -289,12 +300,14 @@ def excluir_produto_do_sistema():
     
     while not verificar_id_ja_existe(id_para_excluir):
         print("Esse produto não existe")
-        id_para_excluir = input("Digite o id do produto que você deseja atualizar: ").upper()
+        id_para_excluir = input("Digite o id do produto que você deseja excluir: ").upper()
+    # Verifica se o produto está sem estoque
     for i in lista_produtos:
       if i['id'] == id_para_excluir:
         if i["quantidade"] == 0:
             print("Não é possível excluir produto sem estoque!")
             break
+        # Confirmação se o usuário quer mesmo exluir o produto
         confirmacao = input(f"Confirmação obrigatória: Você realmente deseja remover {i['nome']}? (S/N) ").upper()
         while confirmacao != "S" and confirmacao != "N":
             confirmacao = input("Digite S para continuar a exclusão e N para cancelar: ").upper()
@@ -318,21 +331,24 @@ def exibir_lista_de_produtos():
     
     # Cabeçalho da listagem
     print("\nLISTA DE PRODUTOS (ordem de cadastro):")
-    print("-" * 80)
-    print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15}") # eu usei este estilo de formatação que achei comumente interessante. Eu posso muito bem setar a quantidade de caracteres que eu quero de espaço entre as colunas, tornando a exibição bem mais organizada.
-    print("-" * 80)
+    print("-" * 90)
+    print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15} {'Preço c/Desc':<15}") # eu usei este estilo de formatação que achei comumente interessante. Eu posso muito bem setar a quantidade de caracteres que eu quero de espaço entre as colunas, tornando a exibição bem mais organizada.
+    print("-" * 90)
     
     # Percorre todos os produtos e exibe suas informações
     for produto in lista_produtos:
         # Define status do estoque (baixo se menor que 5 unidades)
         status = "BAIXO" if produto['quantidade'] < 5 else "OK"
+
+        # Define o preço com desconto, se estiver presente em produto
+        preco_com_desconto = f"R${produto['preco_com_desconto']:.2f}" if 'preco_com_desconto' in produto else "   --"
         
         # Formata e exibe as informações do produto
         print(f"{produto['id']:<8} {produto['nome']:<20} R${produto['preco']:<9.2f} "
-              f"{produto['quantidade']:<5} {produto['categoria']:<15} {status}")
+              f"{produto['quantidade']:<5} {produto['categoria']:<15} {preco_com_desconto:<15} {status}")
     
     # logo abaixo é tipo um rodapé com o total de produtos cadastrados
-    print("-" * 80)
+    print("-" * 90)
     print(f"Total de produtos: {len(lista_produtos)}")
 
 def ordenar_produtos_por_criterio():
@@ -567,17 +583,109 @@ def processar_venda_de_produto():
     Função para processar a venda de produtos
     Reduz a quantidade em estoque quando um produto é vendido
     """
-    pass
+    print("\n===Menu de Venda===")
+    # Verifica se há produtos para buscar
+    if len(lista_produtos) == 0:
+        print("\nNenhum produto cadastrado.")
+        
+    # Procurar produto por ID
+    id_para_vender = input("\nDigite o id do produto que você deseja vender: ").upper()
+    
+    while not verificar_id_ja_existe(id_para_vender):
+        print("Esse produto não existe")
+        id_para_vender = input("Digite o id do produto que você deseja vender: ").upper()
+    
+    # Verifica se é valida a quantidade 
+    quantidade = int(input("Digite quantos produtos você deseja vender: "))
+    
+    for i in lista_produtos:
+      if i['id'] == id_para_vender:
+        while quantidade <1 or quantidade>i['quantidade']:
+          print(f"Você deve digitar um número entre 0 e {i['quantidade']}")
+          quantidade = int(input("Digite quantos produtos você deseja vender: "))
+
+    # Data
+    dia = int(input("Digite o dia: "))
+    while dia<1 or dia>31:
+      print("Dia inválido!")
+      dia = int(input("Digite um número de 1 a 31: "))
+    
+    mes = int(input("Digite o mês no formato MM: "))
+    while len(str(mes)) == 2 and mes<1 or mes>12 :
+        print("Mês inválido!")
+        mes = int(input("Digite o mês no formato MM de 1 a 12: "))
+    mes = str(mes).zfill(2)
+
+    ano = int(input("Digite o ano no formato AAAA: "))
+    while len(str(ano)) != 4:
+      print("Esse ano é inválido!")
+      ano = input("Digite o ano no formato AAAA: ")
+
+    # Registrar venda
+    for i in lista_produtos:
+      if i['id'] == id_para_vender:
+        i['quantidade'] = i['quantidade'] - quantidade
+        novo_estoque = i['quantidade']
+    # Cálculo de Preço total 
+    for i in lista_produtos:
+      if i['id'] == id_para_vender:
+        preco_total = i['preco'] * quantidade
+        nome = i['nome'] 
+    print("\nProduto vendido com sucesso!")
+    # Alerta de estoque vazio
+    if novo_estoque == 0:
+        print("Alerta: Estoque vazio!")
+    
+    # Recibo de venda
+    print("\n===RECIBO===")
+    print(f"Nome do produto: {i['nome']}")
+    print(f"Quantidade de produtos em estoque: {novo_estoque}")
+    print(f"Preço unitário: {i['preco']}")
+    print(f"Preço total: {preco_total}")
+    
+    # dicionário e lista com histórico de venda 
+    produto_vendido = {"data":f"{dia}/{mes}/{ano}", "produto": nome, "quantidade_vendida": quantidade}
+    historico_de_vendas.append(produto_vendido)
+
+def visualizar_historico_de_vendas():
+    print("\n===Histórico de vendas===\n")
+    cont=0
+    for i in historico_de_vendas:
+      cont+=1
+      print(f"\n{cont}.")
+      print(i['data'])
+      print(f"Produto: {i['produto']}")
+      print(f"Qauntidade vendida: {i['quantidade_vendida']}\n")
+
+    
 
 def aplicar_desconto_em_produto():
     """
     Função para aplicar desconto no preço de produtos
     Permite reduzir o preço de produtos específicos
     """
-    pass
 
-# o código abaixo implementa o loop principal do menu, onde o usuário pode escolher as opções disponíveis e executar as funcionalidades do sistema.
-                
+    print("\n===Descontos===\n")
+    desconto = int(input("Digite a porcentagem do desconto que deseja aplicar: "))
+    
+    while desconto>95 or desconto<1:
+        print("Esse desconto não é válido!")
+        desconto = int(input("Digite a porcentagem do desconto que deseja aplicar (Entre 1 e 95): "))
+    
+    categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
+    while categoria not in categorias_validas:
+        print("Erro: Essa categoria não está disponível")
+        print(f"\nCategorias disponíveis: {', '.join(categorias_validas)}")
+        categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
+    print(f"\nDefinido {desconto}% de desconto na categoria {categoria}")
+
+    for i in lista_produtos:
+      if i['categoria'] == categoria:
+        preco = i['preco']
+        preco_com_desconto = preco * (1 - desconto / 100)
+        i['preco_com_desconto'] = round(preco_com_desconto, 2)
+
+#Ínicio do código para saída do menu
 while True:
     # Exibe o menu principal para o usuário
     exibir_menu()
@@ -608,18 +716,15 @@ while True:
         elif opcao == 9:
             aplicar_desconto_em_produto()  # Chama função de desconto
         elif opcao == 10:
+            visualizar_historico_de_vendas()
+        elif opcao == 11:
             # Opção para sair do sistema
             print("Saindo do sistema. Até Logo!")
             break  # Encerra o loop principal
         else:
             # Trata opções inválidas (números fora do range)
-            print("Opção inválida! Por favor, escolha uma opção de 1 a 10.")
+            print("Opção inválida! Por favor, escolha uma opção de 1 a 11.")
             
     except ValueError:
         # Trata entradas não numéricas (letras, símbolos, etc.)
-        print("Erro: Por favor, digite apenas números de 1 a 10.")
-    
-   
-    print()  
-    
-    
+        print("Erro: Por favor, digite apenas números de 1 a 11.")
