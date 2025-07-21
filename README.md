@@ -303,13 +303,91 @@ def gerar_relatorios_do_sistema():
 - **Dictionary comprehension:** Agrupamento eficiente de dados
 - **Filtros condicionais:** Identificação automática de situações críticas
 
-### ✅ 8. Sistema de Menu Principal
+### ✅ 8. Sistema de Venda de Produtos
+**Função Principal:** `processar_venda_de_produto()`
+
+Módulo responsável por realizar o processamento completo da venda de um produto, reduzindo o estoque, gerando recibo e registrando o histórico da transação com validações completas.
+
+**Visualização do Recibo e Histórico de Vendas:**
+```python
+    # Recibo de venda
+    print("\n===RECIBO===")
+    print(f"Nome do produto: {i['nome']}")
+    print(f"Quantidade de produtos em estoque: {novo_estoque}")
+    print(f"Preço unitário: {i['preco']}")
+    print(f"Preço total: {preco_total}")
+    
+    # dicionário e lista com histórico de venda 
+    produto_vendido = {"data":f"{dia}/{mes}/{ano}", "produto": nome, "quantidade_vendida": quantidade}
+    historico_de_vendas.append(produto_vendido)
+
+def visualizar_historico_de_vendas():
+    print("\n===Histórico de vendas===\n")
+    cont=0
+    for i in historico_de_vendas:
+      cont+=1
+      print(f"\n{cont}.")
+      print(i['data'])
+      print(f"Produto: {i['produto']}")
+      print(f"Qauntidade vendida: {i['quantidade_vendida']}\n")
+
+```
+**Características:**
+- Validação completa do ID, quantidade e data da venda
+- Redução automática do estoque com alerta de esgotamento
+- Recibo formatado com nome do produto, preço unitário e total
+- Registro detalhado da venda com data no histórico
+
+### 9. Sistema de Aplicação de Descontos
+
+**Função Principal**: `aplicar_desconto_em_produto()`
+
+Módulo destinado à aplicação de descontos personalizados em produtos de uma determinada categoria, com validações rigorosas e cálculo dinâmico de preço com desconto.
+
+**Menu de descontos:**
+```python
+def aplicar_desconto_em_produto():
+    """
+    Função para aplicar desconto no preço de produtos
+    Permite reduzir o preço de produtos específicos
+    """
+
+    print("\n===Descontos===\n")
+    desconto = int(input("Digite a porcentagem do desconto que deseja aplicar: "))
+    
+    while desconto>95 or desconto<1:
+        print("Esse desconto não é válido!")
+        desconto = int(input("Digite a porcentagem do desconto que deseja aplicar (Entre 1 e 95): "))
+    
+    categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
+    while categoria not in categorias_validas:
+        print("Erro: Essa categoria não está disponível")
+        print(f"\nCategorias disponíveis: {', '.join(categorias_validas)}")
+        categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
+    print(f"\nDefinido {desconto}% de desconto na categoria {categoria}")
+
+    for i in lista_produtos:
+      if i['categoria'] == categoria:
+        preco = i['preco']
+        preco_com_desconto = preco * (1 - desconto / 100)
+        i['preco_com_desconto'] = round(preco_com_desconto, 2)
+```
+
+**Características principais:**
+- **Validação segura da porcentagem de desconto:** Limite de 1% a 95%
+- **Aplicação do desconto nas categorias já disponíveis:** Com lista categorias_validas
+- **Cálculo automático do novo preço:** Aplicação da fórmula `preço * (1 - desconto / 100)`
+- **Armazenamento separado:** Novo valor salvo no campo `preco_com_desconto` sem alterar o preço original
+- **Integração com outra funcionalidade:** `aplicar_desconto_em_produto()`
+
+Feedback informativo: Usuário é notificado do percentual e da categoria escolhida
+### ✅ 10. Sistema de Menu Principal
 
 **Função Principal:** `exibir_menu()` + Loop de controle
 
 Interface principal que coordena todas as funcionalidades do sistema com tratamento robusto de erros.
 
-**Design da interface:**
+**Design da Interface:**
 
 ```text
 ===============================================
@@ -359,6 +437,3 @@ while True:
 - **Validação de range:** Verifica se opção está entre 1-10
 - **Loop infinito controlado:** Continua até usuário escolher sair
 - **Tratamento de erro específico:** Mensagens claras para cada tipo de erro
-
-
-
