@@ -63,7 +63,42 @@ def exibir_menu():
     print("11. Sair")
     
 # esta lista abaixo será responsável por armazenar todos os produtos cadastrados no sistema, será util no final para pode retornar todos os dados.
-lista_produtos = []
+lista_produtos = [    {
+        'id': 'ALM-101',
+        'nome': 'Arroz Integral',
+        'preco': 12.50,
+        'quantidade': 30,
+        'categoria': 'Alimentos'
+    },
+    {
+        'id': 'LMP-202',
+        'nome': 'Detergente Neutro',
+        'preco': 3.75,
+        'quantidade': 50,
+        'categoria': 'Limpeza'
+    },
+    {
+        'id': 'ELT-303',
+        'nome': 'Fone de Ouvido',
+        'preco': 89.90,
+        'quantidade': 15,
+        'categoria': 'Eletrônicos'
+    },
+    {
+        'id': 'VST-404',
+        'nome': 'Camiseta Básica',
+        'preco': 25.00,
+        'quantidade': 40,
+        'categoria': 'Vestuário'
+    },
+    {
+        'id': 'ABC-123',
+        'nome': 'Banana',
+        'preco': 4.00,
+        'quantidade': 25,
+        'categoria': 'Alimentos'
+    }
+]
 categorias_validas = ["Alimentos", "Limpeza", "Eletrônicos", "Vestuário"]
 historico_de_vendas = []
 
@@ -250,14 +285,14 @@ def atualizar_informacoes_produto():
           print("O novo preço deve ser superior a 0")
           novo_preco = float(input("Digite um novo preço: "))
       atualizar_informacao(novo_preco, "preco")    
-      print("Preço atualizado com sucesso!")              
+      print("\nPreço atualizado com sucesso!\n")              
     elif opcao_para_editar == 2:
       novo_nome = input("Digite um novo nome: ")
       while not validar_nome_produto(novo_nome):
           print("Erro! Esse nome não é válido!")
           novo_nome = input("Digite um novo nome: ")
       atualizar_informacao(novo_nome, "nome")
-      print("Nome atualizado com sucesso!")
+      print("\nNome atualizado com sucesso!\n")
     elif opcao_para_editar == 3:
       operacao = input("Digite + pra aumentar o estoque e - para subtrair: ")
       while operacao != "+" and operacao != "-":
@@ -276,7 +311,7 @@ def atualizar_informacoes_produto():
                 nova_quantidade = i["quantidade"] - quantidade
    
       atualizar_informacao(nova_quantidade, "quantidade")
-      print("Estoque atualizado com sucesso!")
+      print("\nEstoque atualizado com sucesso!\n")
       # Caso o estoque zere
       if nova_quantidade == 0:
           print("Estoque esgotado!") 
@@ -307,10 +342,10 @@ def excluir_produto_do_sistema():
             confirmacao = input("Digite S para continuar a exclusão e N para cancelar: ").upper()
         if confirmacao == "S":
             lista_produtos.remove(i)
-            print(f"Exclusão de {i['nome']} feita com sucesso!")
+            print(f"\nExclusão de {i['nome']} feita com sucesso!\n")
             break
         else:
-            print("Exclusão cancelada")
+            print("\nExclusão cancelada\n")
     
 def exibir_lista_de_produtos():
     """
@@ -623,19 +658,24 @@ def processar_venda_de_produto():
     # Cálculo de Preço total 
     for i in lista_produtos:
       if i['id'] == id_para_vender:
+        preco = i['preco']
         preco_total = i['preco'] * quantidade
         nome = i['nome'] 
     print("\nProduto vendido com sucesso!")
     # Alerta de estoque vazio
     if novo_estoque == 0:
         print("Alerta: Estoque vazio!")
-    
     # Recibo de venda
+    preco_total_str = str(preco_total)
+    largura = max(len(nome), len(preco_total_str))
+    preco_formatado = f"R${preco:.2f}"
+    preco_total_formatado = f"R${preco_total:.2f}"
+
     print("\n===RECIBO===")
-    print(f"Nome do produto: {i['nome']}")
-    print(f"Quantidade de produtos em estoque: {novo_estoque}")
-    print(f"Preço unitário: {i['preco']}")
-    print(f"Preço total: {preco_total}")
+    print(f"{'Nome do produto':40} {nome:>{largura}}")
+    print(f"{'Quantidade de produtos em estoque':40} {novo_estoque:>{largura}}")
+    print(f"{'Preço unitário':40} {preco_formatado:>{largura}}")
+    print(f"{'Preço total':40} {preco_total_formatado:>{largura}}\n")
     
     # dicionário e lista com histórico de venda 
     produto_vendido = {"data":f"{dia}/{mes}/{ano}", "produto": nome, "quantidade_vendida": quantidade}
@@ -650,8 +690,6 @@ def visualizar_historico_de_vendas():
       print(i['data'])
       print(f"Produto: {i['produto']}")
       print(f"Qauntidade vendida: {i['quantidade_vendida']}\n")
-
-    
 
 def aplicar_desconto_em_produto():
     """
@@ -671,7 +709,7 @@ def aplicar_desconto_em_produto():
         print("Erro: Essa categoria não está disponível")
         print(f"\nCategorias disponíveis: {', '.join(categorias_validas)}")
         categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
-    print(f"\nDefinido {desconto}% de desconto na categoria {categoria}")
+    print(f"\nDefinido {desconto}% de desconto na categoria {categoria}\n")
 
     for i in lista_produtos:
       if i['categoria'] == categoria:
