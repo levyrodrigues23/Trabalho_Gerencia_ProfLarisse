@@ -63,42 +63,7 @@ def exibir_menu():
     print("11. Sair")
     
 # esta lista abaixo será responsável por armazenar todos os produtos cadastrados no sistema, será util no final para pode retornar todos os dados.
-lista_produtos = [    {
-        'id': 'ALM-101',
-        'nome': 'Arroz Integral',
-        'preco': 12.50,
-        'quantidade': 30,
-        'categoria': 'Alimentos'
-    },
-    {
-        'id': 'LMP-202',
-        'nome': 'Detergente Neutro',
-        'preco': 3.75,
-        'quantidade': 50,
-        'categoria': 'Limpeza'
-    },
-    {
-        'id': 'ELT-303',
-        'nome': 'Fone de Ouvido',
-        'preco': 89.90,
-        'quantidade': 15,
-        'categoria': 'Eletrônicos'
-    },
-    {
-        'id': 'VST-404',
-        'nome': 'Camiseta Básica',
-        'preco': 25.00,
-        'quantidade': 40,
-        'categoria': 'Vestuário'
-    },
-    {
-        'id': 'ABC-123',
-        'nome': 'Banana',
-        'preco': 4.00,
-        'quantidade': 25,
-        'categoria': 'Alimentos'
-    }
-]
+lista_produtos = []
 categorias_validas = ["Alimentos", "Limpeza", "Eletrônicos", "Vestuário"]
 historico_de_vendas = []
 
@@ -168,66 +133,103 @@ def cadastrar_novo_produto():
     print("\n===CADASTRO DE PRODUTO===")
     
     # Validação do ID do produto
+    tentativas_invalidas = 0
     while True:
         id_produto = input("Digite o ID do produto (formato 'ABC-123'): ").upper()
         
         # Verifica se o formato está correto
         if not validar_formato_id_produto(id_produto):
+            tentativas_invalidas += 1
             print("Erro: ID deve estar no formato 'ABC-123' (3 letras maiúsculas, hífen, 3 números)")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                return None
             continue
             
         # Verifica se o ID já existe no sistema
         if verificar_id_ja_existe(id_produto):
+            tentativas_invalidas += 1
             print("Erro: ID do produto já existe.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                return None
             continue
             
         # ID válido e único, pode prosseguir
         break
     
     # Validação do nome do produto
+    tentativas_invalidas = 0
     while True:
         nome_produto = input("Digite o nome do produto: ").strip()
         
         # Verifica se o nome atende aos critérios
         if validar_nome_produto(nome_produto):
             break
+        tentativas_invalidas += 1
         print("Erro: Nome deve ter pelo menos 3 caracteres e conter apenas letras, números e espaços.")
+        if tentativas_invalidas >= 3:
+            print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+            return None
     
     # Validação do preço do produto
+    tentativas_invalidas = 0
     while True:
         try:
             preco_produto = float(input("Digite o preço do produto: R$ "))
             
             # Verifica se o preço é positivo
             if preco_produto <= 0:
+                tentativas_invalidas += 1
                 print("Erro: Preço deve ser positivo.")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                    return None
                 continue
             break
         except ValueError:
+            tentativas_invalidas += 1
             print("Erro: Digite um preço válido.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                return None
     
     # Validação da quantidade do produto
+    tentativas_invalidas = 0
     while True:
         try:
             quantidade_produto = int(input("Digite a quantidade do produto: "))
             
             # Verifica se a quantidade é positiva
             if quantidade_produto <= 0:
+                tentativas_invalidas += 1
                 print("Erro: Quantidade deve ser um número inteiro positivo.")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                    return None
                 continue
             break
         except ValueError:
+            tentativas_invalidas += 1
             print("Erro: Digite uma quantidade válida.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+                return None
     
     # Validação da categoria do produto
+    tentativas_invalidas = 0
     while True:
         print(f"Categorias disponíveis: {', '.join(categorias_validas)}")
-        categoria_produto = input("Digite a categoria do produto: ").strip()
+        categoria_produto = input("Digite a categoria do produto: ").strip().capitalize()
         
         # Verifica se a categoria é válida
         if categoria_produto in categorias_validas:
             break
+        tentativas_invalidas += 1
         print("Erro: Categoria inválida.")
+        if tentativas_invalidas >= 3:
+            print("Muitas tentativas inválidas. Cancelando cadastro de produto.")
+            return None
     
     # Criar o dicionário do produto com todas as informações
     produto = {
@@ -252,11 +254,17 @@ def atualizar_informacoes_produto():
     Permite editar preço, quantidade e categoria
     """
     print("\n===ATUALIZAÇÃO DE PRODUTO===\n")
-    id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()
-    
-    while not verificar_id_ja_existe(id_para_atualizar):
-        print("Esse produto não existe")
-        id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()    
+    tentativas_invalidas = 0
+    while True:
+        id_para_atualizar = input("Digite o id do produto que você deseja atualizar: ").upper()
+        if verificar_id_ja_existe(id_para_atualizar):
+            break
+        else:
+            tentativas_invalidas += 1
+            print("Esse produto não existe")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando atualização de produto.")
+                return
 
     # Menu para dizer o que você vai atualizar
     print("O que você deseja atualizar? ")
@@ -264,10 +272,24 @@ def atualizar_informacoes_produto():
     print("2. Nome")
     print("3. Quantidade de estoque")
 
-    opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
-    # Pede para digitar de novo caso aja erro
-    while 0 > opcao_para_editar or opcao_para_editar > 3:
-        opcao_para_editar = int(input("\nErro: Selecione uma opção de 1 a 3: "))
+    tentativas_invalidas = 0
+    while True:
+        try:
+            opcao_para_editar = int(input("\nSelecione uma opção de 1 a 3: "))
+            if 1 <= opcao_para_editar <= 3:
+                break
+            else:
+                tentativas_invalidas += 1
+                print("\nErro: Selecione uma opção de 1 a 3.")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando atualização de produto.")
+                    return
+        except ValueError:
+            tentativas_invalidas += 1
+            print("\nErro: Digite um número válido.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando atualização de produto.")
+                return
 
     def atualizar_informacao(novo_valor, chave):
       """
@@ -280,34 +302,101 @@ def atualizar_informacoes_produto():
 
     # Atualização de cada uma das opções
     if opcao_para_editar == 1:
-      novo_preco = float(input("Digite um novo preço: "))
-      while novo_preco <=0:
-          print("O novo preço deve ser superior a 0")
-          novo_preco = float(input("Digite um novo preço: "))
+      tentativas_invalidas = 0
+      while True:
+        try:
+            novo_preco = float(input("Digite um novo preço: "))
+            if novo_preco <= 0:
+                tentativas_invalidas += 1
+                print("O novo preço deve ser superior a 0")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando atualização de preço.")
+                    return
+                continue
+            break
+        except ValueError:
+            tentativas_invalidas += 1
+            print("Erro: Digite um preço válido.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando atualização de preço.")
+                return
       atualizar_informacao(novo_preco, "preco")    
       print("\nPreço atualizado com sucesso!\n")              
     elif opcao_para_editar == 2:
-      novo_nome = input("Digite um novo nome: ")
-      while not validar_nome_produto(novo_nome):
-          print("Erro! Esse nome não é válido!")
-          novo_nome = input("Digite um novo nome: ")
+      tentativas_invalidas = 0
+      while True:
+        novo_nome = input("Digite um novo nome: ")
+        if not validar_nome_produto(novo_nome):
+            tentativas_invalidas += 1
+            print("Erro! Esse nome não é válido!")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando atualização de nome.")
+                return
+            continue
+        break
       atualizar_informacao(novo_nome, "nome")
       print("\nNome atualizado com sucesso!\n")
     elif opcao_para_editar == 3:
-      operacao = input("Digite + pra aumentar o estoque e - para subtrair: ")
-      while operacao != "+" and operacao != "-":
-          operacao = input("Você digitou algo errado! Digite - ou +: ")
+      tentativas_invalidas = 0
+      while True:
+        operacao = input("Digite + pra aumentar o estoque e - para subtrair: ")
+        if operacao == "+" or operacao == "-":
+            break
+        else:
+            tentativas_invalidas += 1
+            print("Você digitou algo errado! Digite - ou +: ")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                return
       for i in lista_produtos:
           if i["id"] == id_para_atualizar:
             if operacao == "+":
-                quantidade = int(input("Digite o valor que você quer aumentar: + "))
+                tentativas_invalidas = 0
+                while True:
+                    try:
+                        quantidade = int(input("Digite o valor que você quer aumentar: + "))
+                        if quantidade <= 0:
+                            tentativas_invalidas += 1
+                            print("Erro: A quantidade deve ser positiva.")
+                            if tentativas_invalidas >= 3:
+                                print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                                return
+                            continue
+                        break
+                    except ValueError:
+                        tentativas_invalidas += 1
+                        print("Erro: Digite um número válido.")
+                        if tentativas_invalidas >= 3:
+                            print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                            return
                 nova_quantidade = i["quantidade"] + quantidade
             
             elif operacao == "-":
-                quantidade = int(input("Digite o valor que você quer diminuir: - "))  
-                while quantidade > i["quantidade"]:
-                  print(f"Erro: Não há estoque suficiente para remover essa quantidade.")
-                  quantidade = int(input(f"Digite um valor de no máximo {i["quantidade"]}: - "))  
+                tentativas_invalidas = 0
+                while True:
+                    try:
+                        quantidade = int(input("Digite o valor que você quer diminuir: - "))
+                        if quantidade <= 0:
+                            tentativas_invalidas += 1
+                            print("Erro: A quantidade deve ser positiva.")
+                            if tentativas_invalidas >= 3:
+                                print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                                return
+                            continue
+                        if quantidade > i["quantidade"]:
+                            tentativas_invalidas += 1
+                            print(f"Erro: Não há estoque suficiente para remover essa quantidade.")
+                            if tentativas_invalidas >= 3:
+                                print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                                return
+                            continue
+                        break
+                    except ValueError:
+                        tentativas_invalidas += 1
+                        print("Erro: Digite um número válido.")
+                        if tentativas_invalidas >= 3:
+                            print("Muitas tentativas inválidas. Cancelando atualização de estoque.")
+                            return
                 nova_quantidade = i["quantidade"] - quantidade
    
       atualizar_informacao(nova_quantidade, "quantidade")
@@ -538,74 +627,85 @@ def gerar_relatorios_do_sistema():
     print("2. Produtos com Estoque Baixo")
     print("3. Relatório Completo")
     
-    try:
-        opcao = int(input("Digite a opção: "))
-        
-        if opcao == 1:
-            # Relatório 1: Valor total do estoque
-            # Calcula o valor total multiplicando preço por quantidade de cada produto
-            valor_total = sum(p['preco'] * p['quantidade'] for p in lista_produtos)
-            print(f"\nVALOR TOTAL DO ESTOQUE: R$ {valor_total:.2f}")
-            
-        elif opcao == 2:
-            # Relatório 2: Produtos com estoque baixo
-            limite = 5  # Define o limite para considerar estoque baixo
-            produtos_baixo = [p for p in lista_produtos if p['quantidade'] < limite]
-            
-            print(f"\nPRODUTOS COM ESTOQUE BAIXO (menos de {limite} unidades):")
-            if produtos_baixo:
-                print("-" * 80)
-                print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15}")
-                print("-" * 80)
-                
-                # Exibe cada produto com estoque baixo
-                for produto in produtos_baixo:
-                    print(f"{produto['id']:<8} {produto['nome']:<20} R${produto['preco']:<9.2f} "
-                          f"{produto['quantidade']:<5} {produto['categoria']:<15}")
-                
-                print("-" * 80)
-                print(f"Total com estoque baixo: {len(produtos_baixo)}")
+    tentativas_invalidas = 0
+    while True:
+        try:
+            opcao = int(input("Digite a opção: "))
+            if 1 <= opcao <= 3:
+                break
             else:
-                print("Todos os produtos têm estoque adequado!")
-                
-        elif opcao == 3:
-            # Relatório 3: Relatório completo
-            # Calcula valor total do estoque
-            valor_total = sum(p['preco'] * p['quantidade'] for p in lista_produtos)
-            produtos_baixo = [p for p in lista_produtos if p['quantidade'] < 5]
+                tentativas_invalidas += 1
+                print("Opção inválida.")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando geração de relatórios.")
+                    return
+        except ValueError:
+            tentativas_invalidas += 1
+            print("Entrada inválida.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando geração de relatórios.")
+                return
+        
+    if opcao == 1:
+        # Relatório 1: Valor total do estoque
+        # Calcula o valor total multiplicando preço por quantidade de cada produto
+        valor_total = sum(p['preco'] * p['quantidade'] for p in lista_produtos)
+        print(f"\nVALOR TOTAL DO ESTOQUE: R$ {valor_total:.2f}")
+        
+    elif opcao == 2:
+        # Relatório 2: Produtos com estoque baixo
+        limite = 5  # Define o limite para considerar estoque baixo
+        produtos_baixo = [p for p in lista_produtos if p['quantidade'] < limite]
+        
+        print(f"\nPRODUTOS COM ESTOQUE BAIXO (menos de {limite} unidades):")
+        if produtos_baixo:
+            print("-" * 80)
+            print(f"{'ID':<8} {'Nome':<20} {'Preço':<10} {'Qtd':<5} {'Categoria':<15}")
+            print("-" * 80)
             
-            # Agrupa produtos por categoria para estatísticas
-            categorias = {}
-            for produto in lista_produtos:
-                cat = produto['categoria']
-                if cat not in categorias:
-                    categorias[cat] = {'count': 0, 'valor': 0}
-                categorias[cat]['count'] += 1
-                categorias[cat]['valor'] += produto['preco'] * produto['quantidade']
+            # Exibe cada produto com estoque baixo
+            for produto in produtos_baixo:
+                print(f"{produto['id']:<8} {produto['nome']:<20} R${produto['preco']:<9.2f} "
+                      f"{produto['quantidade']:<5} {produto['categoria']:<15}")
             
-            # Exibe o relatório completo
-            print("\nRELATÓRIO COMPLETO DO ESTOQUE")
-            print("=" * 50)
-            print(f"Valor total do estoque: R$ {valor_total:.2f}")
-            print(f"Total de produtos: {len(lista_produtos)}")
-            print(f"Produtos com estoque baixo: {len(produtos_baixo)}")
-            
-            # Resumo por categoria
-            print("\nRESUMO POR CATEGORIA:")
-            print("-" * 40)
-            for cat, dados in categorias.items():
-                print(f"{cat}: {dados['count']} produtos | R$ {dados['valor']:.2f}")
-            
-            # Lista produtos com estoque baixo se houver
-            if produtos_baixo:
-                print(f"\nPRODUTOS COM ESTOQUE BAIXO:")
-                for produto in produtos_baixo:
-                    print(f"- {produto['nome']} ({produto['id']}): {produto['quantidade']} unidades")
+            print("-" * 80)
+            print(f"Total com estoque baixo: {len(produtos_baixo)}")
         else:
-            print("Opção inválida.")
+            print("Todos os produtos têm estoque adequado!")
             
-    except ValueError:
-        print("Entrada inválida.")
+    elif opcao == 3:
+        # Relatório 3: Relatório completo
+        # Calcula valor total do estoque
+        valor_total = sum(p['preco'] * p['quantidade'] for p in lista_produtos)
+        produtos_baixo = [p for p in lista_produtos if p['quantidade'] < 5]
+        
+        # Agrupa produtos por categoria para estatísticas
+        categorias = {}
+        for produto in lista_produtos:
+            cat = produto['categoria']
+            if cat not in categorias:
+                categorias[cat] = {'count': 0, 'valor': 0}
+            categorias[cat]['count'] += 1
+            categorias[cat]['valor'] += produto['preco'] * produto['quantidade']
+        
+        # Exibe o relatório completo
+        print("\nRELATÓRIO COMPLETO DO ESTOQUE")
+        print("=" * 50)
+        print(f"Valor total do estoque: R$ {valor_total:.2f}")
+        print(f"Total de produtos: {len(lista_produtos)}")
+        print(f"Produtos com estoque baixo: {len(produtos_baixo)}")
+        
+        # Resumo por categoria
+        print("\nRESUMO POR CATEGORIA:")
+        print("-" * 40)
+        for cat, dados in categorias.items():
+            print(f"{cat}: {dados['count']} produtos | R$ {dados['valor']:.2f}")
+        
+        # Lista produtos com estoque baixo se houver
+        if produtos_baixo:
+            print(f"\nPRODUTOS COM ESTOQUE BAIXO:")
+            for produto in produtos_baixo:
+                print(f"- {produto['nome']} ({produto['id']}): {produto['quantidade']} unidades")
     
 def processar_venda_de_produto():
     """
@@ -616,6 +716,7 @@ def processar_venda_de_produto():
     # Verifica se há produtos para buscar
     if len(lista_produtos) == 0:
         print("\nNenhum produto cadastrado.")
+        return
         
     # Procurar produto por ID
     id_para_vender = input("\nDigite o id do produto que você deseja vender: ").upper()
@@ -640,7 +741,7 @@ def processar_venda_de_produto():
       dia = int(input("Digite um número de 1 a 31: "))
     
     mes = int(input("Digite o mês no formato MM: "))
-    while len(str(mes)) == 2 and mes<1 or mes>12 :
+    while mes<1 or mes>12 :
         print("Mês inválido!")
         mes = int(input("Digite o mês no formato MM de 1 a 12: "))
     mes = str(mes).zfill(2)
@@ -658,20 +759,21 @@ def processar_venda_de_produto():
     # Cálculo de Preço total 
     for i in lista_produtos:
       if i['id'] == id_para_vender:
-        preco = i['preco']
-        preco_total = i['preco'] * quantidade
+        if 'preco_com_desconto' in i:
+          preco = i['preco_com_desconto']
+        else:
+          preco = i['preco']
+        preco_total = preco * quantidade
         nome = i['nome'] 
     print("\nProduto vendido com sucesso!")
     # Alerta de estoque vazio
     if novo_estoque == 0:
         print("Alerta: Estoque vazio!")
     # Recibo de venda
-    preco_total_str = str(preco_total)
-    largura = max(len(nome), len(preco_total_str))
     preco_formatado = f"R${preco:.2f}"
     preco_total_formatado = f"R${preco_total:.2f}"
-
-    print("\n===RECIBO===")
+    largura = max(len(nome), len(preco_total_formatado))
+    print("\nRECIBO")
     print(f"{'Nome do produto':40} {nome:>{largura}}")
     print(f"{'Quantidade de produtos em estoque':40} {novo_estoque:>{largura}}")
     print(f"{'Preço unitário':40} {preco_formatado:>{largura}}")
@@ -689,26 +791,46 @@ def visualizar_historico_de_vendas():
       print(f"\n{cont}.")
       print(i['data'])
       print(f"Produto: {i['produto']}")
-      print(f"Qauntidade vendida: {i['quantidade_vendida']}\n")
+      print(f"Quantidade vendida: {i['quantidade_vendida']}\n")
 
 def aplicar_desconto_em_produto():
     """
     Função para aplicar desconto no preço de produtos
     Permite reduzir o preço de produtos específicos
     """
-
     print("\n===Descontos===\n")
-    desconto = int(input("Digite a porcentagem do desconto que deseja aplicar: "))
+    tentativas_invalidas = 0
+    while True:
+        try:
+            desconto = int(input("Digite a porcentagem do desconto que deseja aplicar: "))
+            if 1 <= desconto <= 95:
+                break
+            else:
+                tentativas_invalidas += 1
+                print("Esse desconto não é válido!")
+                if tentativas_invalidas >= 3:
+                    print("Muitas tentativas inválidas. Cancelando aplicação de desconto.")
+                    return
+        except ValueError:
+            tentativas_invalidas += 1
+            print("Erro: Digite um número válido.")
+            if tentativas_invalidas >= 3:
+                print("Muitas tentativas inválidas. Cancelando aplicação de desconto.")
+                return
     
-    while desconto>95 or desconto<1:
-        print("Esse desconto não é válido!")
-        desconto = int(input("Digite a porcentagem do desconto que deseja aplicar (Entre 1 e 95): "))
-    
-    categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
-    while categoria not in categorias_validas:
+    # Validação da categoria do produto
+    tentativas_invalidas = 0
+    while True:
+        print(f"Categorias disponíveis: {', '.join(categorias_validas)}")
+        categoria = input("Digite em qual categoria você deseja aplicar o desconto: ").strip().capitalize()
+        if categoria in categorias_validas:
+            break
+        tentativas_invalidas += 1
         print("Erro: Essa categoria não está disponível")
         print(f"\nCategorias disponíveis: {', '.join(categorias_validas)}")
-        categoria = input("Digite em qual categoria você deseja aplicar o desconto: ")
+        if tentativas_invalidas >= 3:
+            print("Muitas tentativas inválidas. Cancelando aplicação de desconto.")
+            return
     print(f"\nDefinido {desconto}% de desconto na categoria {categoria}\n")
 
     for i in lista_produtos:
